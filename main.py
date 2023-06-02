@@ -3,16 +3,19 @@ import classification_test
 import test_suite
 from util import delete_files
 
-# try to load all testcases from given module, hope your testcases are extending from unittest.TestCase
+print('-----------------------------------------Executing Classification Tasks----------------------------------------')
+
+# executing the classification for all the datasets in the dataset folder
+# saving the results in classification_statements.txt
 suite1 = unittest.TestLoader().loadTestsFromModule(classification_test)
-# run all tests with verbosity
 unittest.TextTestRunner(verbosity=2).run(suite1)
 
-# try to load all testcases from given module, hope your testcases are extending from unittest.TestCase
+print('----------------------------------------------Executing Test Suite---------------------------------------------')
+
+# executing the test suite and setting up the KB with both statements.txt and classification_statements.txt files
 suite2 = unittest.TestLoader().loadTestsFromModule(test_suite)
-# run all tests with verbosity
 unittest.TextTestRunner(verbosity=2).run(suite2)
 
 delete_files()
 
-print('---------------------------------------------Test suite completed----------------------------------------------')
+print('---------------------------------------------Test Suite Completed----------------------------------------------')
