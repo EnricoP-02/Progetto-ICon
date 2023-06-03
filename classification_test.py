@@ -1,42 +1,38 @@
 import unittest
-from typing import List, Any
-
-import read, copy
-from logical_classes import *
+import read
 from function import KnowledgeBase
 
 
 class KBTest(unittest.TestCase):
 
     def setUp(self):
-        # Assert starter facts
-        file = 'statements.txt'
-        self.data = read.read_tokenize(file)
-        data = read.read_tokenize(file)
+        # in this test suite, there is no need to add any rule to the KB because
+        # we are just testing the classification process
         self.KB = KnowledgeBase([], [])
-        for item in data:
-            if isinstance(item, Fact) or isinstance(item, Rule):
-                self.KB.kb_assert(item)
 
-    def test_i(self):
+    def test_1(self):
         ask1 = read.parse_input("fact: (classification setosa)")
         print('Calculating', ask1)
         answer = self.KB.kb_ask(ask1)
+        self.assertEqual(answer[0], True)
 
-    def test_o(self):
+    def test_2(self):
         ask1 = read.parse_input("fact: (classification versicolour)")
         print('Calculating', ask1)
         answer = self.KB.kb_ask(ask1)
+        self.assertEqual(answer[0], True)
 
-    def test_u(self):
+    def test_3(self):
         ask1 = read.parse_input("fact: (classification virginica)")
         print('Calculating', ask1)
         answer = self.KB.kb_ask(ask1)
+        self.assertEqual(answer[0], True)
 
-    def test_za(self):
+    def test_4(self):
         ask1 = read.parse_input("fact: (classification all)")
         print('Calculating', ask1)
         answer = self.KB.kb_ask(ask1)
+        self.assertEqual(answer[0], True)
 
 
 if __name__ == '__main__':

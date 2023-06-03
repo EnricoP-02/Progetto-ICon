@@ -22,6 +22,7 @@ from sklearn.naive_bayes import CategoricalNB
 
 
 def construct_confusion_matrix(matrix, display_labels):
+    # display the confusion matrix constructed through confusion_matrix function
     disp = ConfusionMatrixDisplay(confusion_matrix=matrix, display_labels=display_labels)
     disp.plot(cmap=plt.cm.YlGnBu)
 
@@ -36,6 +37,7 @@ def construct_confusion_matrix(matrix, display_labels):
 
 
 def classification(dataset_path) -> list[ClassificationResult]:
+    # executes classification task for every model implemented
     classification_results = []
 
     warnings.filterwarnings('ignore')
@@ -43,7 +45,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
     pd.set_option('display.max_columns', None)
 
     def train_evaluate_model(test_set, predictions, prediction_proba, model_name):
-        # compute metrics for evaluation
+        # calculates metrics for the evaluation of the classification model
         accuracy = accuracy_score(test_set, predictions)
         f1 = f1_score(test_set, predictions, average='micro')
         precision = precision_score(test_set, predictions, average='micro')
@@ -73,8 +75,8 @@ def classification(dataset_path) -> list[ClassificationResult]:
 
     dataset = raw_file[["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm", "Species"]]
 
-    y = (dataset['Species'])  # .astype(string)  # Assign to y Only the target column 'Species'
-    x = dataset.loc[:, dataset.columns != 'Species']  # Assign to X everything but the 'Species' column
+    y = (dataset['Species'])  # Assign to y only the output feature 'Species'
+    x = dataset.loc[:, dataset.columns != 'Species']  # Assign to X the input features, so everything but 'Species'
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
 
     # -----------------
@@ -87,10 +89,10 @@ def classification(dataset_path) -> list[ClassificationResult]:
         'n_neighbors': range(1, 10),
         'weights': ['distance', 'uniform']
     }
-    # per togliere le stampe eliminare verbose
+
     knn_grid = GridSearchCV(KNeighborsClassifier(), knn_param_grid, refit=True)
 
-    # Fit the model for grid search
+    # Fit the model for grid search function
     knn_grid.fit(x_train, y_train)
 
     # Print the best parameters
@@ -122,12 +124,13 @@ def classification(dataset_path) -> list[ClassificationResult]:
     }
     dt_grid = GridSearchCV(dt, dt_param_grid, n_jobs=-1)
 
-    # Fit the model for grid search
+    # Fit the model for grid search function
     dt_grid.fit(x_train, y_train)
 
     # Print the best parameters
     print('\nDT grid best params:\n', dt_grid.best_params_)
 
+    # Predict with the best parameter
     dt_target_test_prd = dt_grid.predict(x_test)
     if dataset_path != './dataset/Iris.csv':
         dt_target_test_prd_proba = dt_grid.predict_proba(x_test)[:, 1]
@@ -163,6 +166,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
     # Print the best parameters
     print('\nRF grid best params:\n', rf_grid.best_params_)
 
+    # Predict with the best parameter
     rf_target_test_prd = rf_grid.predict(x_test)
     if dataset_path != './dataset/Iris.csv':
         rf_target_test_prd_proba = rf_grid.predict_proba(x_test)[:, 1]
@@ -204,9 +208,11 @@ def classification(dataset_path) -> list[ClassificationResult]:
     sc = MinMaxScaler()
     scaler = sc.fit(x_train)
 
+    # utilizing the MinMaxScaler we normalize the range of values in our data
     x_train_scaled = scaler.transform(x_train)
     x_test_scaled = scaler.transform(x_test)
 
+    # define parameter_grid
     param_grid = {
         'hidden_layer_sizes': (4, 4, 4),
         'max_iter': [2000, 2100],
@@ -219,16 +225,21 @@ def classification(dataset_path) -> list[ClassificationResult]:
     mlp_clf = MLPClassifier()
 
     nn_grid = GridSearchCV(mlp_clf, param_grid, n_jobs=-1)
+
+    # fit the model for grid search
     nn_grid.fit(x_train_scaled, y_train)
 
+    # Print the best parameters
     print('\nNN grid best params:\n', nn_grid.best_params_)
 
+    # Predict with the best parameter
     nn_target_test_prd = nn_grid.predict(x_test_scaled)
     if dataset_path != './dataset/Iris.csv':
         nn_target_test_prd_proba = nn_grid.predict_proba(x_test_scaled)[:, 1]
     else:
         nn_target_test_prd_proba = nn_grid.predict_proba(x_test_scaled)
 
+    # Construct confusion matrix
     nn_conf_matrix = confusion_matrix(y_test, nn_target_test_prd, labels=nn_grid.classes_)
     construct_confusion_matrix(nn_conf_matrix, nn_grid.classes_)
 
@@ -240,6 +251,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
     sc = StandardScaler()
     scaler = sc.fit(x_train)
 
+    # utilizing the StandardScaler we normalize the range of values in our data
     x_train_scaled = scaler.transform(x_train)
     x_test_scaled = scaler.transform(x_test)
 
@@ -251,7 +263,6 @@ def classification(dataset_path) -> list[ClassificationResult]:
     }
 
     logreg = LogisticRegression()
-
     lr_grid = GridSearchCV(logreg, param_grid=parameters, cv=5)
 
     # Fit the model for grid search
@@ -260,6 +271,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
     # Print the best parameters
     print('\nLR grid best params:\n', lr_grid.best_params_)
 
+    # Predict with the best parameter
     lr_target_test_prd = lr_grid.predict(x_test_scaled)
     if dataset_path != './dataset/Iris.csv':
         lr_target_test_prd_proba = lr_grid.predict_proba(x_test_scaled)[:, 1]
@@ -278,6 +290,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
     sc = MinMaxScaler()
     scaler = sc.fit(x_train)
 
+    # utilizing the MinMaxScaler we normalize the range of values in our data
     x_scaled = scaler.transform(x)
 
     scaled_dataframe = pd.DataFrame(x_scaled, columns=x.columns)
@@ -288,6 +301,8 @@ def classification(dataset_path) -> list[ClassificationResult]:
         n_cluster = 2
 
     kmeans_model = KMeans(n_cluster, n_init=10)
+
+    # training the model
     kmeans_model.fit(scaled_dataframe)
 
     scaled_dataframe['cluster'] = kmeans_model.labels_
@@ -297,6 +312,7 @@ def classification(dataset_path) -> list[ClassificationResult]:
                              scaled_dataframe['cluster'].value_counts(ascending=True), dataset_path)
     )
 
+    # Print classification results
     print('\n', scaled_dataframe['cluster'].value_counts(sort=True))
 
     print('\n----------------------------------------------- Results ------------------------------------------------')
@@ -319,25 +335,27 @@ def classification(dataset_path) -> list[ClassificationResult]:
     lr_results = train_evaluate_model(y_test, lr_target_test_prd, lr_target_test_prd_proba, 'logistic_regression')
     lr_results.index = ['Logistic Regression']
 
+    # list of all the created dataframes
     frames = [knn_results, dt_results, rf_results, nb_results, nn_results, lr_results]
 
+    # transform list in a single table
     results = pd.concat(frames)
 
     display(results)
 
     fig, ax = plt.subplots()
-    # hide axes
     fig.patch.set_visible(False)
     ax.axis('off')
     ax.axis('tight')
 
-    # for df in frames:
+    # create window to display the table containing the classification results
     the_table = ax.table(rowLabels=results.index, cellText=results.values, colLabels=results.columns, loc='center')
     the_table.auto_set_font_size(False)
     mng = plt.get_current_fig_manager()
     mng.window.state('zoomed')
     the_table.set_fontsize(10)
 
+    # display the new table
     plt.show()
 
     return classification_results

@@ -1,7 +1,5 @@
-import read, copy
 import classification
 from util import *
-from logical_classes import *
 from classification import *
 import os.path
 
@@ -25,11 +23,9 @@ class KnowledgeBase(object):
 
     def _get_fact(self, fact):
         """INTERNAL USE ONLY
-        Get the fact in the KB that is the same as the fact argument
-
+        Get the fact in the KB that is the same as the fact passed as argument
         Args:
             fact (Fact): Fact we're searching for
-
         Returns:
             Fact: matching fact
         """
@@ -39,11 +35,9 @@ class KnowledgeBase(object):
 
     def _get_rule(self, rule):
         """INTERNAL USE ONLY
-        Get the rule in the KB that is the same as the rule argument
-
+        Get the rule in the KB that is the same as the rule passed as argument
         Args:
             rule (Rule): Rule we're searching for
-
         Returns:
             Rule: matching rule
         """
@@ -88,7 +82,6 @@ class KnowledgeBase(object):
 
     def kb_assert(self, fact_rule):
         """Assert a fact or rule into the KB
-
         Args:
             fact_rule (Fact or Rule): Fact or Rule we're asserting
         """
@@ -97,12 +90,10 @@ class KnowledgeBase(object):
 
     def kb_ask(self, fact):
         """Ask if a fact is in the KB
-
         Args:
             fact (Fact) - Statement to be asked (will be converted into a Fact)
-
         Returns:
-            listof Bindings|False - list of Bindings if result found, False otherwise
+            list of Bindings or False - list of Bindings if result found, False otherwise
         """
         print("Asking {!r}".format(fact))
         if factq(fact):
@@ -110,7 +101,6 @@ class KnowledgeBase(object):
                 results = self.ask_classification(fact)
                 self.create_classification_statements(results)
                 return [True]
-
             else:
                 f = Fact(fact.statement)
                 bindings_lst = ListOfBindings()
@@ -119,14 +109,14 @@ class KnowledgeBase(object):
                     binding = match(f.statement, fact.statement)
                     if binding:
                         bindings_lst.add_bindings(binding, [fact])
-
                 return bindings_lst if bindings_lst.list_of_bindings else []
-
         else:
             print("Invalid ask:", fact.statement)
             return []
 
     def ask_classification(self, fact):
+        # reads fact passed as argument and decides which dataset to utilize in the classification process
+        # returns results, a list of ClassificationResult objects calculated through the classification module
         dataset = ''
 
         if str(fact.statement).__contains__('setosa'):
@@ -138,10 +128,13 @@ class KnowledgeBase(object):
         elif str(fact.statement).__contains__('all'):
             dataset = './dataset/Iris.csv'
 
+        # dataset variable contains path to the selected dataset
         results = classification(dataset)
         return results
 
     def create_file(self, results, type):
+        # creates a blank txt file and name it based on the type passed as argument
+        # to save in it the results passed as argument from the classification process
         path = './classification_file_' + type + '.txt'
 
         if not os.path.isfile(path):
@@ -175,6 +168,7 @@ class KnowledgeBase(object):
             classification_file.close()
 
     def create_classification_statements(self, results):
+        # creates a blank txt file and writes on it the statements constructed from the results list passed as argument
         path = './classification_statements.txt'
         classification_statements = open(path, "a")
         new_line = ''
@@ -233,6 +227,9 @@ class KnowledgeBase(object):
         classification_statements.close()
 
     def find_value(self, fact):
+        # finds value in the fact passed as argument and
+        # searches it in the metric results saved in the classification files created in create_file function
+        # returns found value or empty list
         line = []
         found_metric = []
 
@@ -260,10 +257,8 @@ class KnowledgeBase(object):
 
     def kb_retract(self, fact_or_rule):
         """Retract a fact from the KB
-
         Args:
             fact (Fact) - Fact to be retracted
-
         Returns:
             None
         """
@@ -318,13 +313,11 @@ class KnowledgeBase(object):
 
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
-        """Forward-chaining to infer new facts and rules
-
+        """Forward-chaining to infer new facts and rules based on the arguments passed
         Args:
             fact (Fact) - A fact from the KnowledgeBase
             rule (Rule) - A rule from the KnowledgeBase
             kb (KnowledgeBase) - A KnowledgeBase
-
         Returns:
             Nothing            
         """

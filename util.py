@@ -6,10 +6,8 @@ def is_var(var):
     """Check whether an element is a variable (either instance of Variable, 
         instance of Term (where .term is a Variable) or a string starting with 
         `'?'`, e.g. `'?d'`)
-
     Args:
         var (any): value to check
-
     Returns:
         bool
     """
@@ -24,12 +22,10 @@ def is_var(var):
 def match(state1, state2, bindings=None):
     """Match two statements and return the associated bindings or False if there
         is no binding
-
     Args:
         state1 (Statement): statement to match with state2
         state2 (Statement): statement to match with state1
         bindings (Bindings|None): already associated bindings
-
     Returns:
         Bindings|False: either associated bindings or no match found
     """
@@ -42,12 +38,10 @@ def match(state1, state2, bindings=None):
 
 def match_recursive(terms1, terms2, bindings):  # recursive...
     """Recursive helper for match
-
     Args:
         terms1 (listof Term): terms to match with terms2
         terms2 (listof Term): terms to match with terms1
         bindings (Bindings): already associated bindings
-
     Returns:
         Bindings|False: either associated bindings or no match found
     """
@@ -67,7 +61,6 @@ def match_recursive(terms1, terms2, bindings):  # recursive...
 def instantiate(statement, bindings):
     """Generate Statement from given statement and bindings. Constructed statement
         has bound values for variables if they exist in bindings.
-
     Args:
         statement (Statement): statement to generate new statement from
         bindings (Bindings): bindings to substitute into statement
@@ -86,10 +79,8 @@ def instantiate(statement, bindings):
 
 def factq(element):
     """Check if element is a fact
-
     Args:
         element (any): element to check
-
     Returns:
         bool
     """
@@ -98,7 +89,6 @@ def factq(element):
 
 def printv(message, level, verbose, data=[]):
     """Prints given message formatted with data if passed in verbose flag is greater than level
-
     Args:
         message (str): message to print, if format string data should have values
             to format with
@@ -111,7 +101,10 @@ def printv(message, level, verbose, data=[]):
 
 
 def delete_files():
-    # erasing created files
+    # erasing all the files created from the classification process
+    # (classification_file_setosa.txt, classification_file_versicolour.txt,
+    # classification_file_virginica.txt , classification_file_all.txt)
+    # and the file containing the statements constucted from the calssification results (classification_statements.txt)
     if os.path.exists('./classification_file_setosa.txt'):
         os.remove('./classification_file_setosa.txt')
         print('File deleted')

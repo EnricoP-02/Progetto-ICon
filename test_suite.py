@@ -1,5 +1,4 @@
 import unittest
-
 import read
 from logical_classes import *
 from function import KnowledgeBase
@@ -27,6 +26,8 @@ class KBTest(unittest.TestCase):
                 self.KB.kb_assert(item)
 
     # tests 1 through 4 are classification tasks
+    # tests 5 through 12 are based on the knowledge acquired from statements.txt file
+    # tests 13 through 35 are based on the knowledge acquired from classification_statements.txt
     def test_5(self):
         ask1 = read.parse_input("fact: (isa setosa ?X)")
         print(' Asking if', ask1)
